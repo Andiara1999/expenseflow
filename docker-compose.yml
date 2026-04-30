@@ -1,0 +1,17 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: expenseflow_postgres
+    restart: always
+    environment:
+      POSTGRES_DB: expenseflow
+      POSTGRES_USER: expenseflow_user
+      POSTGRES_PASSWORD: expenseflow_pass
+      POSTGRES_INITDB_ARGS: "--auth-host=md5"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

@@ -8,15 +8,16 @@ use Illuminate\Http\Request;
 
 class ExpenseController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return Expense::all();
+        return Expense::with(['category', 'user'])
+            ->where('user_id', $request->user()->id)
+            ->get();
     }
 
     public function store(Request $request)
     {
-        $expense = Expense::create($request->validate([
-            'user_id' => 'required|exists:users,id',
+        $data = $request->validate([
             'expense_category_id' => 'required|exists:expense_categories,id',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -24,7 +25,12 @@ class ExpenseController extends Controller
             'expense_date' => 'required|date',
             'status' => 'nullable|string',
             'receipt_path' => 'nullable|string'
-        ]));
+        ]);
+
+        $data['user_id'] = $request->user()->id;
+        $data['status'] = $data['status'] ?? 'pending';
+
+        $expense = Expense::create($data);
 
         return response()->json($expense, 201);
     }

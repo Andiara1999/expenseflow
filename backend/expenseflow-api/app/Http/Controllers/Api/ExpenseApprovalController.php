@@ -11,28 +11,34 @@ class ExpenseApprovalController extends Controller
 {
     public function approve(Request $request, Expense $expense)
     {
-        if ($expense->status !== 'pending') {
-            return response()->json([
-                'message' => 'Somente despesas pendentes podem ser aprovadas.'
-            ], 422);
-        }
-
-        $expense->update([
-            'status' => 'approved'
-        ]);
-
-        $approval = ExpenseApproval::create([
-            'expense_id' => $expense->id,
-            'approved_by' => $request->user()->id,
-            'status' => 'approved',
-            'comment' => $request->input('comment')
-        ]);
-
+    if ($request->user()->role !== 'manager') {
         return response()->json([
-            'message' => 'Despesa aprovada com sucesso.',
-            'expense' => $expense,
-            'approval' => $approval
-        ]);
+            'message' => 'Apenas gestores podem aprovar despesas.'
+        ], 403);
+    }
+
+    if ($expense->status !== 'pending') {
+        return response()->json([
+            'message' => 'Somente despesas pendentes podem ser aprovadas.'
+        ], 422);
+    }
+
+    $expense->update([
+        'status' => 'approved'
+    ]);
+
+    $approval = ExpenseApproval::create([
+        'expense_id' => $expense->id,
+        'approved_by' => $request->user()->id,
+        'status' => 'approved',
+        'comment' => $request->input('comment')
+    ]);
+
+    return response()->json([
+        'message' => 'Despesa aprovada com sucesso.',
+        'expense' => $expense,
+        'approval' => $approval
+    ]);
     }
 
     public function reject(Request $request, Expense $expense)
@@ -40,6 +46,12 @@ class ExpenseApprovalController extends Controller
         $data = $request->validate([
             'comment' => 'required|string|max:1000'
         ]);
+        
+        if ($request->user()->role !== 'manager') {
+            return response()->json([
+                'message' => 'Apenas gestores podem recusar despesas.'
+            ], 403);
+        }
 
         if ($expense->status !== 'pending') {
             return response()->json([

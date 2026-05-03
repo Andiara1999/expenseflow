@@ -10,4 +10,5 @@ Route::middleware('auth:sanctum')->group(function () {
     
     Route::post('/expenses/{expense}/approve', 'Api\ExpenseApprovalController@approve');
     Route::post('/expenses/{expense}/reject', 'Api\ExpenseApprovalController@reject');
+    Route::get('/dashboard', 'Api\DashboardController@index');
 });

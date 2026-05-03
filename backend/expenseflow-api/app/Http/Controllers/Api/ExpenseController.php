@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Expense;
 use Illuminate\Http\Request;
+use App\Http\Requests\StoreExpenseRequest;
+use App\Http\Requests\UpdateExpenseRequest;
 
 class ExpenseController extends Controller
 {
@@ -15,20 +17,12 @@ class ExpenseController extends Controller
             ->get();
     }
 
-    public function store(Request $request)
+    public function store(StoreExpenseRequest $request)
     {
-        $data = $request->validate([
-            'expense_category_id' => 'required|exists:expense_categories,id',
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'amount' => 'required|numeric|min:0.01',
-            'expense_date' => 'required|date',
-            'status' => 'nullable|string',
-            'receipt_path' => 'nullable|string'
-        ]);
+        $data = $request->validated();
 
         $data['user_id'] = $request->user()->id;
-        $data['status'] = $data['status'] ?? 'pending';
+        $data['status'] = 'pending';
 
         $expense = Expense::create($data);
 
@@ -40,21 +34,19 @@ class ExpenseController extends Controller
         return Expense::findOrFail($id);
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateExpenseRequest $request, $id)
     {
-        $expense = Expense::findOrFail($id);
+    $expense = Expense::findOrFail($id);
 
-        $expense->update($request->validate([
-            'expense_category_id' => 'required|exists:expense_categories,id',
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'amount' => 'required|numeric|min:0.01',
-            'expense_date' => 'required|date',
-            'status' => 'nullable|string',
-            'receipt_path' => 'nullable|string'
-        ]));
+    if ($expense->status !== 'pending') {
+        return response()->json([
+            'message' => 'Somente despesas pendentes podem ser editadas.'
+        ], 422);
+    }
 
-        return $expense;
+    $expense->update($request->validated());
+
+    return response()->json($expense);
     }
 
     public function destroy($id)

@@ -26,32 +26,13 @@ class DashboardController extends Controller
 
         $data = [
             'total_expenses' => (clone $query)->count(),
-
-            'total_pending' => (clone $query)
-                ->where('status', 'pending')
-                ->count(),
-
-            'total_approved' => (clone $query)
-                ->where('status', 'approved')
-                ->count(),
-
-            'total_paid' => (clone $query)
-                ->where('status', 'paid')
-                ->count(),
-
+            'total_pending' => (clone $query)->where('status', 'pending')->count(),
+            'total_approved' => (clone $query)->where('status', 'approved')->count(),
+            'total_paid' => (clone $query)->where('status', 'paid')->count(),
             'total_amount' => (clone $query)->sum('amount'),
-
-            'total_amount_pending' => (clone $query)
-                ->where('status', 'pending')
-                ->sum('amount'),
-
-            'total_amount_approved' => (clone $query)
-                ->where('status', 'approved')
-                ->sum('amount'),
-
-            'total_amount_paid' => (clone $query)
-                ->where('status', 'paid')
-                ->sum('amount'),
+            'total_amount_pending' => (clone $query)->where('status', 'pending')->sum('amount'),
+            'total_amount_approved' => (clone $query)->where('status', 'approved')->sum('amount'),
+            'total_amount_paid' => (clone $query)->where('status', 'paid')->sum('amount'),
 
             'expenses_by_category' => (clone $query)
                 ->join('expense_categories', 'expenses.expense_category_id', '=', 'expense_categories.id')

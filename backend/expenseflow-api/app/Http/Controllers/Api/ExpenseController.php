@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ExpenseResource;
 use App\Models\Expense;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreExpenseRequest;
@@ -12,9 +13,11 @@ class ExpenseController extends Controller
 {
     public function index(Request $request)
     {
-        return Expense::with(['category', 'user'])
+        $expenses = Expense::with('category')
             ->where('user_id', $request->user()->id)
             ->get();
+
+        return ExpenseResource::collection($expenses);
     }
 
     public function store(StoreExpenseRequest $request)
@@ -26,12 +29,12 @@ class ExpenseController extends Controller
 
         $expense = Expense::create($data);
 
-        return response()->json($expense, 201);
+        return new ExpenseResource($expense);
     }
 
     public function show($id)
     {
-        return Expense::findOrFail($id);
+        return new ExpenseResource($expense);
     }
 
     public function update(UpdateExpenseRequest $request, $id)
@@ -46,7 +49,7 @@ class ExpenseController extends Controller
 
     $expense->update($request->validated());
 
-    return response()->json($expense);
+    return new ExpenseResource($expense);
     }
 
     public function destroy($id)

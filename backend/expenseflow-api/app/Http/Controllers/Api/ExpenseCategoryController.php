@@ -5,14 +5,15 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\ExpenseCategory;
 use Illuminate\Http\Request;
+use App\Http\Resources\ExpenseCategoryResource;
+
 
 class ExpenseCategoryController extends Controller
 {
     public function index()
     {
-        return ExpenseCategory::all();
+        return ExpenseCategoryResource::collection(ExpenseCategory::all());
     }
-
 
     public function store(Request $request)
     {
@@ -20,12 +21,12 @@ class ExpenseCategoryController extends Controller
             'name' => 'required|string|max:255'
         ]));
 
-        return response()->json($category, 201);
+        return new ExpenseCategoryResource($category);
     }
 
     public function show($id)
     {
-        return ExpenseCategory::findOrFail($id);
+        return new ExpenseCategoryResource(ExpenseCategory::findOrFail($id));
     }
 
     public function update(Request $request, $id)
@@ -36,7 +37,7 @@ class ExpenseCategoryController extends Controller
             'name' => 'required|string|max:255'
         ]));
 
-        return $category;
+        return new ExpenseCategoryResource($category);
     }
 
     public function destroy($id)

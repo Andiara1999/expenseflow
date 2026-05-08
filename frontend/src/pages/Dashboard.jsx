@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
 
-export default function Dashboard({ onLogout, onGoToExpenses }) {
+export default function Dashboard({ onLogout, onGoToExpenses, onGoToCategories  }) {
   const [dashboard, setDashboard] = useState(null);
   const [error, setError] = useState("");
 
@@ -74,6 +74,10 @@ export default function Dashboard({ onLogout, onGoToExpenses }) {
       <div style={{ display: "flex", gap: 12 }}>
         <button style={styles.secondaryButton} onClick={onGoToExpenses}>
           Ver despesas
+        </button>
+
+        <button style={styles.secondaryButton} onClick={onGoToCategories}>
+          Categorias
         </button>
 
         <button style={styles.logoutButton} onClick={handleLogout}>

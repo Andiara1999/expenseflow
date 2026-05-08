@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\ExpenseCategory;
+use App\Http\Resources\ExpenseCategoryResource;
 use Illuminate\Http\Request;
 
 class ExpenseCategoryController extends Controller
@@ -16,11 +17,17 @@ class ExpenseCategoryController extends Controller
 
     public function store(Request $request)
     {
-        $category = ExpenseCategory::create($request->validate([
-            'name' => 'required|string|max:255'
-        ]));
+        if ($request->user()->role !== 'admin') {
+            return response()->json([
+                'message' => 'Apenas administradores podem criar categorias.'
+            ], 403);
+        }
 
-        return response()->json($category, 201);
+    $category = ExpenseCategory::create($request->validate([
+        'name' => 'required|string|max:255'
+    ]));
+
+    return new ExpenseCategoryResource($category);
     }
 
     public function show($id)

@@ -21,6 +21,19 @@ export default function Expenses({ onBack, onCreate, onEdit }) {
     });
   }
 
+  async function handleDelete(id) {
+  const confirmDelete = window.confirm("Deseja realmente excluir esta despesa?");
+
+    if (!confirmDelete) return;
+
+    try {
+      await api.delete(`/expenses/${id}`);
+      await loadExpenses();
+    } catch (err) {
+      setError("Erro ao excluir despesa.");
+    }
+  }
+
   useEffect(() => {
     loadExpenses();
   }, []);
@@ -78,11 +91,14 @@ export default function Expenses({ onBack, onCreate, onEdit }) {
                   </td>
                   <td style={styles.td}>{expense.expense_date}</td>
                    <tr>
-                  <td style={styles.td}>
-                  <button style={styles.editButton} onClick={() => onEdit(expense.id)}>
-                    Editar
-                  </button>
-                </td>
+                    <td style={styles.td}>
+                    <button style={styles.editButton} onClick={() => onEdit(expense.id)}>
+                      Editar
+                    </button>
+                    <button style={styles.deleteButton} onClick={() => handleDelete(expense.id)}>
+                      Excluir
+                    </button>
+                   </td>
                 </tr>
                 </tr>
               ))}
@@ -132,7 +148,7 @@ const styles = {
     color: "#64748b",
     fontSize: "16px",
   },
-    editButton: {
+  editButton: {
     background: "#2563eb",
     color: "#fff",
     border: "none",
@@ -140,6 +156,16 @@ const styles = {
     borderRadius: "8px",
     cursor: "pointer",
     fontWeight: "bold",
+  },
+  deleteButton: {
+    background: "#dc2626",
+    color: "#fff",
+    border: "none",
+    padding: "8px 12px",
+    borderRadius: "8px",
+    cursor: "pointer",
+    fontWeight: "bold",
+    marginLeft: "8px",
   },
 
   backButton: {

@@ -4,6 +4,7 @@ import Dashboard from "./pages/Dashboard";
 import Expenses from "./pages/Expenses";
 import CreateExpense from "./pages/CreateExpense";
 import EditExpense from "./pages/EditExpense";
+import Categories from "./pages/Categories";
 
 function App() {
   const [isLogged, setIsLogged] = useState(
@@ -41,12 +42,16 @@ function App() {
   if (page === "create") {
     return <CreateExpense onBack={() => setPage("expenses")} />;
   }
+  if (page === "categories") {
+    return <Categories onBack={() => setPage("dashboard")} />;
+  } 
 
   return (
     <Dashboard
       onLogout={() => setIsLogged(false)}
       onGoToExpenses={() => setPage("expenses")}
-    />
+      onGoToCategories={() => setPage("categories")}
+    />  
   );
 }
 
